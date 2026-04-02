@@ -1,75 +1,10 @@
 // ===== GATE 2027 - Premium Notes Platform =====
-// Modern, minimal JavaScript for smooth interactions
+// Firebase-integrated JavaScript for notes management
 
-// ===== Sample Notes Data =====
-const sampleNotes = [
-    {
-        id: 1,
-        title: "Complete Binary Tree Notes",
-        subject: "dsa",
-        subjectName: "Data Structures",
-        type: "handwritten",
-        description: "Comprehensive notes covering binary trees, BST, AVL trees, and heap data structures with examples and visualizations.",
-        author: "Rahul Sharma",
-        authorInitials: "RS",
-        downloads: 234
-    },
-    {
-        id: 2,
-        title: "SQL Queries Cheat Sheet",
-        subject: "dbms",
-        subjectName: "Database Management",
-        type: "formula",
-        description: "Quick reference for all important SQL queries, joins, subqueries, and aggregate functions for GATE preparation.",
-        author: "Priya Patel",
-        authorInitials: "PP",
-        downloads: 456
-    },
-    {
-        id: 3,
-        title: "Process Scheduling Algorithms",
-        subject: "os",
-        subjectName: "Operating Systems",
-        type: "typed",
-        description: "Detailed explanation of FCFS, SJF, Round Robin, Priority scheduling with solved numerical examples.",
-        author: "Amit Kumar",
-        authorInitials: "AK",
-        downloads: 189
-    },
-    {
-        id: 4,
-        title: "OSI Model Explained",
-        subject: "cn",
-        subjectName: "Computer Networks",
-        type: "handwritten",
-        description: "Layer by layer explanation of OSI model with protocols, functions, and real-world application examples.",
-        author: "Sneha Gupta",
-        authorInitials: "SG",
-        downloads: 312
-    },
-    {
-        id: 5,
-        title: "Regular Expressions & DFA",
-        subject: "toc",
-        subjectName: "Theory of Computation",
-        type: "typed",
-        description: "Converting RE to NFA to DFA with step-by-step solutions and state minimization techniques.",
-        author: "Vikram Singh",
-        authorInitials: "VS",
-        downloads: 178
-    },
-    {
-        id: 6,
-        title: "Graph Algorithms PYQs",
-        subject: "dsa",
-        subjectName: "Data Structures",
-        type: "pyq",
-        description: "Previous year GATE questions on BFS, DFS, Dijkstra, Bellman-Ford, and MST algorithms with solutions.",
-        author: "Neha Verma",
-        authorInitials: "NV",
-        downloads: 567
-    }
-];
+// ===== State =====
+let currentUser = null;
+let currentFilter = 'all';
+let allNotes = [];
 
 // ===== DOM Elements =====
 const notesGrid = document.getElementById('notesGrid');
@@ -82,10 +17,13 @@ const navbar = document.getElementById('navbar');
 // Modals
 const loginModal = document.getElementById('loginModal');
 const signupModal = document.getElementById('signupModal');
+const syllabusModal = document.getElementById('syllabusModal');
 const loginBtn = document.getElementById('loginBtn');
 const signupBtn = document.getElementById('signupBtn');
+const syllabusBtn = document.getElementById('syllabusBtn');
 const closeLogin = document.getElementById('closeLogin');
 const closeSignup = document.getElementById('closeSignup');
+const closeSyllabus = document.getElementById('closeSyllabus');
 const switchToSignup = document.getElementById('switchToSignup');
 const switchToLogin = document.getElementById('switchToLogin');
 
@@ -111,10 +49,145 @@ const hamburger = document.getElementById('hamburger');
 
 // ===== Initialize =====
 document.addEventListener('DOMContentLoaded', () => {
-    renderNotes(sampleNotes);
     initializeEventListeners();
     initScrollAnimations();
+    initFirebase();
 });
+
+// ===== Firebase Initialization =====
+async function initFirebase() {
+    // Check if Firebase is configured
+    if (typeof AuthService === 'undefined') {
+        console.log('Firebase not configured - using demo mode');
+        loadDemoNotes();
+        return;
+    }
+
+    // Listen for auth state changes
+    AuthService.onAuthStateChanged((user) => {
+        currentUser = user;
+        updateUIForAuthState(user);
+    });
+
+    // Load notes from Firebase
+    await loadNotesFromFirebase();
+}
+
+function updateUIForAuthState(user) {
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    
+    if (user) {
+        loginBtn.textContent = user.displayName || 'Profile';
+        signupBtn.textContent = 'Logout';
+        signupBtn.onclick = handleLogout;
+    } else {
+        loginBtn.textContent = 'Login';
+        signupBtn.textContent = 'Sign Up';
+        signupBtn.onclick = () => openModal(signupModal);
+    }
+}
+
+async function loadNotesFromFirebase() {
+    try {
+        showLoadingState();
+        const result = await NotesService.getNotes(currentFilter);
+        
+        if (result.success && result.notes.length > 0) {
+            allNotes = result.notes;
+            renderNotes(allNotes);
+        } else {
+            // If no notes in Firebase, show demo notes
+            loadDemoNotes();
+        }
+    } catch (error) {
+        console.log('Loading demo notes...');
+        loadDemoNotes();
+    }
+}
+
+function loadDemoNotes() {
+    // Demo notes for when Firebase isn't configured
+    const demoNotes = [
+        {
+            id: '1',
+            title: "Complete Binary Tree Notes",
+            subject: "dsa",
+            subjectName: "Data Structures",
+            type: "handwritten",
+            description: "Comprehensive notes covering binary trees, BST, AVL trees, and heap data structures with examples.",
+            authorName: "Rahul Sharma",
+            authorInitials: "RS",
+            downloads: 234
+        },
+        {
+            id: '2',
+            title: "SQL Queries Cheat Sheet",
+            subject: "dbms",
+            subjectName: "Database Management",
+            type: "formula",
+            description: "Quick reference for all important SQL queries, joins, subqueries, and aggregate functions.",
+            authorName: "Priya Patel",
+            authorInitials: "PP",
+            downloads: 456
+        },
+        {
+            id: '3',
+            title: "Process Scheduling Algorithms",
+            subject: "os",
+            subjectName: "Operating Systems",
+            type: "typed",
+            description: "Detailed explanation of FCFS, SJF, Round Robin, Priority scheduling with solved examples.",
+            authorName: "Amit Kumar",
+            authorInitials: "AK",
+            downloads: 189
+        },
+        {
+            id: '4',
+            title: "OSI Model Explained",
+            subject: "cn",
+            subjectName: "Computer Networks",
+            type: "handwritten",
+            description: "Layer by layer explanation of OSI model with protocols and real-world examples.",
+            authorName: "Sneha Gupta",
+            authorInitials: "SG",
+            downloads: 312
+        },
+        {
+            id: '5',
+            title: "Regular Expressions & DFA",
+            subject: "toc",
+            subjectName: "Theory of Computation",
+            type: "typed",
+            description: "Converting RE to NFA to DFA with step-by-step solutions and minimization techniques.",
+            authorName: "Vikram Singh",
+            authorInitials: "VS",
+            downloads: 178
+        },
+        {
+            id: '6',
+            title: "Graph Algorithms PYQs",
+            subject: "dsa",
+            subjectName: "Data Structures",
+            type: "pyq",
+            description: "Previous year GATE questions on BFS, DFS, Dijkstra, and MST algorithms with solutions.",
+            authorName: "Neha Verma",
+            authorInitials: "NV",
+            downloads: 567
+        }
+    ];
+    allNotes = demoNotes;
+    renderNotes(demoNotes);
+}
+
+function showLoadingState() {
+    notesGrid.innerHTML = `
+        <div class="loading-state" style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: var(--accent); margin-bottom: 15px;"></i>
+            <p style="color: var(--text-muted);">Loading notes...</p>
+        </div>
+    `;
+}
 
 // ===== Render Notes =====
 function renderNotes(notes) {
@@ -134,8 +207,11 @@ function renderNotes(notes) {
 }
 
 function createNoteCard(note) {
+    const authorName = note.authorName || note.author || 'Anonymous';
+    const authorInitials = note.authorInitials || authorName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    
     return `
-        <div class="note-card" data-subject="${note.subject}">
+        <div class="note-card" data-subject="${note.subject}" data-id="${note.id}">
             <div class="note-card-header">
                 <span class="note-type-badge">${formatType(note.type)}</span>
                 <h3>${note.title}</h3>
@@ -145,14 +221,14 @@ function createNoteCard(note) {
                 <p class="note-description">${note.description}</p>
                 <div class="note-meta">
                     <div class="note-author">
-                        <div class="note-author-avatar">${note.authorInitials}</div>
-                        <span class="note-author-name">${note.author}</span>
+                        <div class="note-author-avatar">${authorInitials}</div>
+                        <span class="note-author-name">${authorName}</span>
                     </div>
                     <div class="note-actions">
-                        <button class="note-action-btn" title="Download" onclick="downloadNote(${note.id})">
+                        <button class="note-action-btn" title="Download" onclick="downloadNote('${note.id}')">
                             <i class="fas fa-download"></i>
                         </button>
-                        <button class="note-action-btn" title="Save" onclick="saveNote(${note.id})">
+                        <button class="note-action-btn" title="Save" onclick="saveNote('${note.id}')">
                             <i class="fas fa-bookmark"></i>
                         </button>
                     </div>
@@ -207,10 +283,40 @@ function initializeEventListeners() {
         setTimeout(() => openModal(loginModal), 200);
     });
 
+    // Syllabus modal
+    syllabusBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        openModal(syllabusModal);
+    });
+    closeSyllabus.addEventListener('click', () => closeModal(syllabusModal));
+
+    // Syllabus tabs
+    const syllabusTabs = document.querySelectorAll('.syllabus-tab');
+    const syllabusPanels = document.querySelectorAll('.syllabus-panel');
+    
+    syllabusTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const section = tab.dataset.section;
+            
+            // Update active tab
+            syllabusTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            // Update active panel
+            syllabusPanels.forEach(panel => {
+                panel.classList.remove('active');
+                if (panel.dataset.panel === section) {
+                    panel.classList.add('active');
+                }
+            });
+        });
+    });
+
     // Close modal on outside click
     window.addEventListener('click', (e) => {
         if (e.target === loginModal) closeModal(loginModal);
         if (e.target === signupModal) closeModal(signupModal);
+        if (e.target === syllabusModal) closeModal(syllabusModal);
     });
 
     // Escape key closes modals
@@ -218,6 +324,7 @@ function initializeEventListeners() {
         if (e.key === 'Escape') {
             closeModal(loginModal);
             closeModal(signupModal);
+            closeModal(syllabusModal);
         }
     });
 
@@ -313,41 +420,61 @@ document.head.insertAdjacentHTML('beforeend', `
 `);
 
 // ===== Filter Notes =====
-function filterNotes(filter) {
-    if (filter === 'all') {
-        renderNotes(sampleNotes);
+async function filterNotes(filter) {
+    currentFilter = filter;
+    
+    if (typeof NotesService !== 'undefined') {
+        // Use Firebase
+        const result = await NotesService.getNotes(filter);
+        if (result.success) {
+            allNotes = result.notes;
+            renderNotes(allNotes);
+        }
     } else {
-        const filtered = sampleNotes.filter(note => note.subject === filter);
-        renderNotes(filtered);
+        // Use local data
+        if (filter === 'all') {
+            renderNotes(allNotes);
+        } else {
+            const filtered = allNotes.filter(note => note.subject === filter);
+            renderNotes(filtered);
+        }
     }
 }
 
 // ===== Search =====
-function performSearch() {
+async function performSearch() {
     const query = searchInput.value.toLowerCase().trim();
     if (!query) {
-        renderNotes(sampleNotes);
+        renderNotes(allNotes);
         return;
     }
 
-    const results = sampleNotes.filter(note => 
-        note.title.toLowerCase().includes(query) ||
-        note.description.toLowerCase().includes(query) ||
-        note.subjectName.toLowerCase().includes(query) ||
-        note.author.toLowerCase().includes(query)
-    );
-
-    renderNotes(results);
-    
-    if (results.length === 0) {
-        notesGrid.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search" style="font-size: 48px; color: var(--text-light); margin-bottom: 25px; display: block;"></i>
-                <h3>No notes found</h3>
-                <p>Try different keywords or browse by subject</p>
-            </div>
-        `;
+    if (typeof NotesService !== 'undefined') {
+        const result = await NotesService.searchNotes(query);
+        if (result.success) {
+            renderNotes(result.notes);
+            if (result.notes.length === 0) showNoResults();
+        }
+    } else {
+        const results = allNotes.filter(note => 
+            note.title.toLowerCase().includes(query) ||
+            note.description.toLowerCase().includes(query) ||
+            note.subjectName.toLowerCase().includes(query) ||
+            (note.authorName || '').toLowerCase().includes(query)
+        );
+        renderNotes(results);
+        if (results.length === 0) showNoResults();
     }
+}
+
+function showNoResults() {
+    notesGrid.innerHTML = `
+        <div class="no-results">
+            <i class="fas fa-search" style="font-size: 48px; color: var(--text-light); margin-bottom: 25px; display: block;"></i>
+            <h3>No notes found</h3>
+            <p>Try different keywords or browse by subject</p>
+        </div>
+    `;
 }
 
 // ===== Modal Functions =====
@@ -362,32 +489,65 @@ function closeModal(modal) {
 }
 
 // ===== Form Handlers =====
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
 
-    console.log('Login:', { email, password });
-    
-    showToast('Welcome back! You have been signed in.');
-    closeModal(loginModal);
-    loginForm.reset();
+    console.log('Login attempt:', { email });
+    console.log('AuthService available:', typeof AuthService !== 'undefined');
+
+    if (typeof AuthService !== 'undefined') {
+        const result = await AuthService.signIn(email, password);
+        console.log('Login result:', result);
+        if (result.success) {
+            showToast('Welcome back! You have been signed in.');
+            closeModal(loginModal);
+            loginForm.reset();
+        } else {
+            showToast(result.error || 'Login failed', 'error');
+        }
+    } else {
+        showToast('Backend not connected - please check console', 'error');
+        console.error('AuthService not loaded! Check if api-config.js is included');
+        closeModal(loginModal);
+    }
 }
 
-function handleSignup(e) {
+async function handleSignup(e) {
     e.preventDefault();
     const name = document.getElementById('signupName').value;
     const email = document.getElementById('signupEmail').value;
     const password = document.getElementById('signupPassword').value;
 
-    console.log('Signup:', { name, email, password });
-    
-    showToast('Account created successfully!');
-    closeModal(signupModal);
-    signupForm.reset();
+    console.log('Signup attempt:', { name, email });
+    console.log('AuthService available:', typeof AuthService !== 'undefined');
+
+    if (typeof AuthService !== 'undefined') {
+        const result = await AuthService.signUp(name, email, password);
+        console.log('Signup result:', result);
+        if (result.success) {
+            showToast('Account created successfully!');
+            closeModal(signupModal);
+            signupForm.reset();
+        } else {
+            showToast(result.error || 'Signup failed', 'error');
+        }
+    } else {
+        showToast('Backend not connected - please check console', 'error');
+        console.error('AuthService not loaded! Check if api-config.js is included');
+        closeModal(signupModal);
+    }
 }
 
-function handleUpload(e) {
+async function handleLogout() {
+    if (typeof AuthService !== 'undefined') {
+        await AuthService.signOut();
+        showToast('You have been logged out.');
+    }
+}
+
+async function handleUpload(e) {
     e.preventDefault();
     
     const title = document.getElementById('noteTitle').value;
@@ -401,13 +561,38 @@ function handleUpload(e) {
         return;
     }
 
-    const uploadData = { title, subject, type, description, fileName: file.name };
-    console.log('Upload:', uploadData);
+    if (typeof NotesService !== 'undefined' && typeof AuthService !== 'undefined') {
+        if (!AuthService.getCurrentUser()) {
+            showToast('Please login to upload notes', 'error');
+            openModal(loginModal);
+            return;
+        }
 
-    showToast('Notes uploaded successfully. Thank you for contributing!');
-    uploadForm.reset();
-    filePreview.classList.remove('active');
-    filePreview.innerHTML = '';
+        showToast('Uploading your notes...');
+        
+        const noteData = {
+            title,
+            subject,
+            subjectName: getSubjectName(subject),
+            type,
+            description
+        };
+
+        const result = await NotesService.uploadNote(file, noteData);
+        
+        if (result.success) {
+            showToast('Notes uploaded successfully. Thank you for contributing!');
+            uploadForm.reset();
+            filePreview.classList.remove('active');
+            filePreview.innerHTML = '';
+            // Refresh notes list
+            await loadNotesFromFirebase();
+        } else {
+            showToast(result.error, 'error');
+        }
+    } else {
+        showToast('Firebase not configured - upload disabled in demo mode', 'error');
+    }
 }
 
 // ===== File Upload Handlers =====
@@ -507,19 +692,49 @@ function showToast(message, type = 'success') {
 }
 
 // ===== Note Actions =====
-function downloadNote(noteId) {
-    const note = sampleNotes.find(n => n.id === noteId);
-    if (note) {
-        showToast(`Downloading: ${note.title}`);
-        console.log('Downloading note:', noteId);
+async function downloadNote(noteId) {
+    if (typeof NotesService !== 'undefined') {
+        const result = await NotesService.downloadNote(noteId);
+        if (result.success) {
+            // Trigger download
+            const link = document.createElement('a');
+            link.href = result.downloadURL;
+            link.download = result.fileName;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`Downloading: ${result.fileName}`);
+        } else {
+            showToast(result.error, 'error');
+        }
+    } else {
+        const note = allNotes.find(n => n.id === noteId);
+        if (note) {
+            showToast(`Download not available in demo mode`);
+        }
     }
 }
 
-function saveNote(noteId) {
-    const note = sampleNotes.find(n => n.id === noteId);
-    if (note) {
-        showToast(`Saved to bookmarks: ${note.title}`);
-        console.log('Saving note:', noteId);
+async function saveNote(noteId) {
+    if (typeof NotesService !== 'undefined') {
+        if (!AuthService.getCurrentUser()) {
+            showToast('Please login to save notes', 'error');
+            openModal(loginModal);
+            return;
+        }
+        
+        const result = await NotesService.saveNote(noteId);
+        if (result.success) {
+            showToast(result.message);
+        } else {
+            showToast(result.error, 'error');
+        }
+    } else {
+        const note = allNotes.find(n => n.id === noteId);
+        if (note) {
+            showToast(`Saved to bookmarks: ${note.title}`);
+        }
     }
 }
 

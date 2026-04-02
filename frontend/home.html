@@ -37,6 +37,12 @@
 
     <!-- Hero Section -->
     <section class="hero">
+        <div class="hero-video-container">
+            <video autoplay muted loop playsinline class="hero-video">
+                <source src="media/videos/hero_section_video.mp4" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
+        </div>
         <div class="hero-content">
             <span class="hero-eyebrow">Your Path to Success</span>
             <h1>
@@ -237,7 +243,7 @@
             <div class="footer-links">
                 <h4>Resources</h4>
                 <a href="#">Study Tips</a>
-                <a href="#">GATE Syllabus</a>
+                <a href="#" id="syllabusBtn">GATE Syllabus</a>
                 <a href="#">Previous Papers</a>
                 <a href="#">Mock Tests</a>
             </div>
@@ -298,12 +304,150 @@
         </div>
     </div>
 
+    <!-- Syllabus Modal -->
+    <div class="modal syllabus-modal" id="syllabusModal">
+        <div class="modal-content syllabus-content">
+            <span class="modal-close" id="closeSyllabus">&times;</span>
+            
+            <div class="syllabus-header">
+                <h2>GATE 2027 Syllabus</h2>
+                <p class="syllabus-subtitle">Computer Science & Information Technology</p>
+            </div>
+            
+            <div class="syllabus-body">
+                <div class="syllabus-sidebar">
+                    <div class="syllabus-tabs">
+                        <button class="syllabus-tab active" data-section="math">Engineering Mathematics</button>
+                        <button class="syllabus-tab" data-section="digital">Digital Logic</button>
+                        <button class="syllabus-tab" data-section="coa">Computer Organization</button>
+                        <button class="syllabus-tab" data-section="programming">Programming & DS</button>
+                        <button class="syllabus-tab" data-section="algo">Algorithms</button>
+                        <button class="syllabus-tab" data-section="toc">Theory of Computation</button>
+                        <button class="syllabus-tab" data-section="compiler">Compiler Design</button>
+                        <button class="syllabus-tab" data-section="os">Operating System</button>
+                        <button class="syllabus-tab" data-section="dbms">Databases</button>
+                        <button class="syllabus-tab" data-section="cn">Computer Networks</button>
+                    </div>
+                </div>
+                
+                <div class="syllabus-main">
+                    <div class="syllabus-panels">
+                <div class="syllabus-panel active" data-panel="math">
+                    <h3>Section 1: Engineering Mathematics</h3>
+                    <div class="syllabus-topic">
+                        <h4>Discrete Mathematics</h4>
+                        <p>Propositional and first order logic. Sets, relations, functions, partial orders and lattices. Monoids, Groups. Graphs: connectivity, matching, colouring. Combinatorics: counting, recurrence relations, generating functions.</p>
+                    </div>
+                    <div class="syllabus-topic">
+                        <h4>Linear Algebra</h4>
+                        <p>Matrices, determinants, system of linear equations, eigenvalues and eigenvectors, LU decomposition.</p>
+                    </div>
+                    <div class="syllabus-topic">
+                        <h4>Calculus</h4>
+                        <p>Limits, continuity and differentiability, Maxima and minima, Mean value theorem, Integration.</p>
+                    </div>
+                    <div class="syllabus-topic">
+                        <h4>Probability and Statistics</h4>
+                        <p>Random variables, Uniform, normal, exponential, Poisson and binomial distributions. Mean, median, mode and standard deviation. Conditional probability and Bayes theorem.</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="digital">
+                    <h3>Section 2: Digital Logic</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>Boolean algebra. Combinational and sequential circuits. Minimization. Number representations and computer arithmetic (fixed and floating point).</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="coa">
+                    <h3>Section 3: Computer Organization and Architecture</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>Machine instructions and addressing modes. ALU, data-path and control unit. Instruction pipelining, pipeline hazards. Memory hierarchy: cache, main memory and secondary storage; I/O interface (interrupt and DMA mode).</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="programming">
+                    <h3>Section 4: Programming and Data Structures</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>Programming in C. Recursion. Arrays, stacks, queues, linked lists, trees, binary search trees, binary heaps, graphs.</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="algo">
+                    <h3>Section 5: Algorithms</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>Searching, sorting, hashing. Asymptotic worst case time and space complexity. Algorithm design techniques: greedy, dynamic programming and divide-and-conquer. Graph traversals, minimum spanning trees, shortest paths.</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="toc">
+                    <h3>Section 6: Theory of Computation</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>Regular expressions and finite automata. Context-free grammars and push-down automata. Regular and context-free languages, pumping lemma. Turing machines and undecidability.</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="compiler">
+                    <h3>Section 7: Compiler Design</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>Lexical analysis, parsing, syntax-directed translation. Runtime environments. Intermediate code generation. Local optimization, Data flow analyses: constant propagation, liveness analysis, common sub-expression elimination.</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="os">
+                    <h3>Section 8: Operating System</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>System calls, processes, threads, inter-process communication, concurrency and synchronization. Deadlock. CPU and I/O scheduling. Memory management and virtual memory. File systems.</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="dbms">
+                    <h3>Section 9: Databases</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>ER-model. Relational model: relational algebra, tuple calculus, SQL. Integrity constraints, normal forms. File organization, indexing (e.g., B and B+ trees). Transactions and concurrency control.</p>
+                    </div>
+                </div>
+                
+                <div class="syllabus-panel" data-panel="cn">
+                    <h3>Section 10: Computer Networks</h3>
+                    <div class="syllabus-topic">
+                        <h4>Topics</h4>
+                        <p>Concept of layering: OSI and TCP/IP Protocol Stacks; Basics of packet, circuit and virtual circuit-switching; Data link layer: framing, error detection, Medium Access Control, Ethernet bridging; Routing protocols: shortest path, flooding, distance vector and link state routing; Fragmentation and IP addressing, IPv4, CIDR notation, Basics of IP support protocols (ARP, DHCP, ICMP), Network Address Translation (NAT); Transport layer: flow control and congestion control, UDP, TCP, sockets; Application layer protocols: DNS, SMTP, HTTP, FTP, Email.</p>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toastMessage">Success!</span>
     </div>
 
+    <!-- API Configuration - Choose ONE option below -->
+    
+    <!-- OPTION 1: Node.js Backend (uncomment to use) -->
+    <script src="api-config.js"></script>
+    
+    <!-- OPTION 2: Firebase Backend (uncomment to use)
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    -->
+    
     <script src="home.js"></script>
 </body>
 </html>

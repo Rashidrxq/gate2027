@@ -1498,3 +1498,127 @@ section[id] {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-muted);
 }
+
+/* ===== Contact Section ===== */
+.contact-section {
+    padding: var(--section-padding) 6%;
+    background: var(--bg-primary);
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.contact-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 30px;
+    background: var(--bg-white);
+    border: 1.5px solid var(--border);
+    text-decoration: none;
+    transition: all var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--accent-subtle) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity var(--transition-smooth);
+}
+
+.contact-card:hover::before {
+    opacity: 1;
+}
+
+.contact-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.contact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+}
+
+.contact-card i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    transition: transform var(--transition-fast);
+}
+
+.contact-card:hover i {
+    transform: scale(1.1);
+}
+
+.contact-card.whatsapp i {
+    color: #25D366;
+}
+
+.contact-card.email i {
+    color: var(--accent);
+}
+
+.contact-card.linkedin i {
+    color: #0A66C2;
+}
+
+.contact-card.github i {
+    color: #333;
+}
+
+.contact-card h3 {
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.contact-card p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.contact-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 8px 16px;
+    background: var(--accent-subtle);
+    border-radius: 20px;
+}
+
+.contact-note {
+    text-align: center;
+    margin-top: 60px;
+    padding: 30px;
+    background: var(--bg-secondary);
+    border-left: 4px solid var(--accent);
+}
+
+.contact-note p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin: 8px 0;
+}
+
+.contact-note strong {
+    color: var(--text-primary);
+}

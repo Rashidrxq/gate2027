@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "gate2027-frontend",
+  "builds": [
+    { "src": "frontend/*", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/frontend/$1" }
+  ]
+}

@@ -1,7 +1,7 @@
 // ===== GATE 2027 - Node.js API Configuration =====
 // Switch from Firebase to Node.js backend
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://gate2027-api.onrender.com/api';
 
 // ===== Auth Token Management =====
 function getToken() {
@@ -152,7 +152,7 @@ const NotesService = {
             
             if (data.success) {
                 // Convert relative URL to absolute
-                data.downloadURL = `http://localhost:5000${data.downloadURL}`;
+                data.downloadURL = `https://gate2027-api.onrender.com${data.downloadURL}`;
             }
             return data;
         } catch (error) {

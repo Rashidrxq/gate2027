@@ -13,7 +13,24 @@
     "authorId": "d0fd4850-4ba5-462f-9b9b-88c4f1fb3851",
     "authorName": "rashid",
     "authorInitials": "R",
-    "downloads": 1,
+    "downloads": 2,
     "createdAt": "2026-04-02T10:38:59.950Z"
+  },
+  {
+    "id": "1b039e4b-7caf-411a-93ee-5c8adb51144d",
+    "title": "databse management ",
+    "subject": "dbms",
+    "subjectName": "Database Management",
+    "type": "typed",
+    "description": "Notes for database management",
+    "fileName": "dbms.pdf",
+    "fileSize": 3408015,
+    "filePath": "1775138247044-30b51e8b-f84c-45a8-b17b-8a3b8bcd38c7.pdf",
+    "downloadURL": "/uploads/1775138247044-30b51e8b-f84c-45a8-b17b-8a3b8bcd38c7.pdf",
+    "authorId": "d0fd4850-4ba5-462f-9b9b-88c4f1fb3851",
+    "authorName": "rashid",
+    "authorInitials": "R",
+    "downloads": 0,
+    "createdAt": "2026-04-02T13:57:27.171Z"
   }
 ]
